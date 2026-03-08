@@ -1,0 +1,26 @@
+@page
+@model Octalines.Web.Pages.WarehousesModel
+@{
+    ViewData["Title"] = "Warehouses";
+}
+<div class="d-flex justify-content-end mb-3">
+    <a href="/Warehouses/Create" class="btn btn-sm btn-primary"><i class="fas fa-plus me-1"></i>Add Warehouse</a>
+</div>
+<div class="card">
+    <div class="card-body p-0">
+        <table class="table table-hover mb-0">
+            <thead class="table-light"><tr><th>Name</th><th>Location</th><th>Default</th><th></th></tr></thead>
+            <tbody>
+                @foreach (var w in Model.Warehouses?.Items ?? Array.Empty<WarehouseDto>())
+                {
+                    <tr>
+                        <td class="fw-semibold">@w.Name</td>
+                        <td>@w.Location</td>
+                        <td>@(w.IsDefault ? Html.Raw("<span class='badge bg-primary'>Default</span>") : Html.Raw(""))</td>
+                        <td><a href="/Warehouses/Edit/@w.Id" class="btn btn-sm btn-outline-secondary py-0 px-2">Edit</a></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

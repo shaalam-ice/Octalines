@@ -1,0 +1,112 @@
+@page
+@model Octalines.Web.Pages.DashboardModel
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<div class="row g-3 mb-4">
+    <div class="col-md-2">
+        <div class="card summary-card" style="border-color:#4e73df">
+            <div class="card-body py-3">
+                <div class="text-xs text-primary text-uppercase small fw-bold mb-1">Today Sales</div>
+                <div class="h5 mb-0 fw-bold">@Model.Summary?.TodaySales.ToString("N2")</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="card summary-card" style="border-color:#1cc88a">
+            <div class="card-body py-3">
+                <div class="text-success text-uppercase small fw-bold mb-1">Month Sales</div>
+                <div class="h5 mb-0 fw-bold">@Model.Summary?.ThisMonthSales.ToString("N2")</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="card summary-card" style="border-color:#36b9cc">
+            <div class="card-body py-3">
+                <div class="text-info text-uppercase small fw-bold mb-1">Customers</div>
+                <div class="h5 mb-0 fw-bold">@Model.Summary?.TotalCustomers</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="card summary-card" style="border-color:#f6c23e">
+            <div class="card-body py-3">
+                <div class="text-warning text-uppercase small fw-bold mb-1">Suppliers</div>
+                <div class="h5 mb-0 fw-bold">@Model.Summary?.TotalSuppliers</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="card summary-card" style="border-color:#e74a3b">
+            <div class="card-body py-3">
+                <div class="text-danger text-uppercase small fw-bold mb-1">Low Stock</div>
+                <div class="h5 mb-0 fw-bold">@Model.Summary?.LowStockItems</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="card summary-card" style="border-color:#858796">
+            <div class="card-body py-3">
+                <div class="text-secondary text-uppercase small fw-bold mb-1">Cash Balance</div>
+                <div class="h5 mb-0 fw-bold">@Model.Summary?.CashBalance.ToString("N2")</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header fw-semibold">Sales Last 30 Days</div>
+            <div class="card-body">
+                <canvas id="salesChart" height="90"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-header fw-semibold">Top 10 Items</div>
+            <div class="card-body p-0">
+                <table class="table table-sm mb-0">
+                    <thead class="table-light"><tr><th>Item</th><th class="text-end">Revenue</th></tr></thead>
+                    <tbody>
+                        @foreach (var item in (Model.Summary?.TopItems ?? new()))
+                        {
+                            <tr>
+                                <td class="small">@item.ItemName</td>
+                                <td class="text-end small">@item.TotalRevenue.ToString("N2")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+const labels = [@Html.Raw(string.Join(",", (Model.Summary?.DailySales ?? new()).Select(d => $"'{d.Date:MMM dd}'")))];
+const data = [@Html.Raw(string.Join(",", (Model.Summary?.DailySales ?? new()).Select(d => d.Total)))];
+new Chart(document.getElementById('salesChart'), {
+    type: 'line',
+    data: {
+        labels,
+        datasets: [{
+            label: 'Sales',
+            data,
+            fill: true,
+            borderColor: '#4e73df',
+            backgroundColor: 'rgba(78,115,223,0.1)',
+            tension: 0.3,
+            pointRadius: 3
+        }]
+    },
+    options: {
+        plugins: { legend: { display: false } },
+        scales: { y: { beginAtZero: true } }
+    }
+});
+</script>
+}

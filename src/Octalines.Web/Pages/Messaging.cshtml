@@ -1,0 +1,48 @@
+@page
+@model Octalines.Web.Pages.MessagingModel
+@{
+    ViewData["Title"] = "Messaging";
+}
+<div class="row g-3">
+    <div class="col-md-5">
+        <div class="card">
+            <div class="card-header fw-semibold">Send Message</div>
+            <div class="card-body">
+                <form method="post">
+                    <div class="mb-3">
+                        <label class="form-label">Phone</label>
+                        <input asp-for="Input.Phone" class="form-control" placeholder="+1234567890" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Channel</label>
+                        <select asp-for="Input.Channel" class="form-select" asp-items="Html.GetEnumSelectList<MessageChannel>()"></select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Message</label>
+                        <textarea asp-for="Input.Message" class="form-control" rows="4"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100"><i class="fas fa-paper-plane me-1"></i>Send</button>
+                </form>
+                @if (Model.Sent) { <div class="alert alert-success mt-3 mb-0"><i class="fas fa-check me-1"></i>Message sent successfully!</div> }
+            </div>
+        </div>
+    </div>
+    <div class="col-md-7">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span class="fw-semibold">Message Templates</span>
+            </div>
+            <div class="card-body p-0">
+                <table class="table table-sm mb-0">
+                    <thead class="table-light"><tr><th>Name</th><th>Channel</th><th>Active</th></tr></thead>
+                    <tbody>
+                        @foreach (var t in Model.Templates?.Items ?? Array.Empty<MessageTemplateDto>())
+                        {
+                            <tr><td>@t.Name</td><td>@t.Channel</td><td><span class="badge @(t.IsActive ? "bg-success" : "bg-secondary")">@(t.IsActive ? "Active" : "Inactive")</span></td></tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,303 @@
+@page
+@model Octalines.Web.Pages.POSModel
+@{
+    ViewData["Title"] = "POS";
+    Layout = "_POSLayout";
+}
+
+<div class="flex-grow-1 d-flex flex-column" style="min-width:0">
+    <div class="mb-3 position-relative">
+        <div class="input-group input-group-lg">
+            <span class="input-group-text bg-white"><i class="fas fa-search text-muted"></i></span>
+            <input type="text" id="itemSearch" class="form-control border-start-0 ps-0" placeholder="Search item by name or scan barcode..." autocomplete="off" autofocus />
+        </div>
+        <div id="searchResults" class="list-group shadow position-absolute w-100" style="z-index:1000;top:100%;left:0"></div>
+    </div>
+    <div class="card flex-grow-1" style="overflow:hidden">
+        <div class="card-header py-2 d-flex justify-content-between align-items-center">
+            <span class="fw-semibold">Cart <span class="badge bg-primary ms-1" id="cartCount">0</span></span>
+            <button class="btn btn-sm btn-outline-danger" onclick="clearCart()"><i class="fas fa-trash me-1"></i>Clear</button>
+        </div>
+        <div class="card-body p-0" style="overflow-y:auto">
+            <table class="table table-sm mb-0">
+                <thead class="table-light sticky-top">
+                    <tr><th>Item</th><th style="width:90px" class="text-center">Qty</th><th style="width:90px" class="text-end">Price</th><th style="width:90px" class="text-end">Total</th><th style="width:40px"></th></tr>
+                </thead>
+                <tbody id="cartBody"></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div style="width:300px;flex-shrink:0">
+    <div class="card">
+        <div class="card-header fw-semibold py-2">Order Summary</div>
+        <div class="card-body py-2 px-3">
+            <div class="mb-2">
+                <label class="form-label small mb-1">Customer</label>
+                <select id="customerId" class="form-select form-select-sm">
+                    <option value="">Walk-in Customer</option>
+                    @foreach (var c in Model.Customers) { <option value="@c.Id">@c.Name</option> }
+                </select>
+            </div>
+            <div class="mb-2">
+                <label class="form-label small mb-1">Warehouse</label>
+                <select id="warehouseId" class="form-select form-select-sm">
+                    @foreach (var w in Model.Warehouses) { <option value="@w.Id">@w.Name</option> }
+                </select>
+            </div>
+            <hr class="my-2"/>
+            <div class="d-flex justify-content-between small mb-1"><span class="text-muted">Subtotal:</span><span id="subtotal" class="fw-semibold">0.00</span></div>
+            <div class="d-flex justify-content-between align-items-center small mb-2">
+                <span class="text-muted">Discount:</span>
+                <input type="number" id="discount" value="0" min="0" step="0.01" class="form-control form-control-sm text-end ms-2" style="width:80px" oninput="recalculate()" />
+            </div>
+            <div class="d-flex justify-content-between border-top pt-2 mb-2">
+                <span class="fw-semibold">Grand Total:</span>
+                <span id="grandTotal" class="fw-bold text-success fs-5">0.00</span>
+            </div>
+            <hr class="my-2"/>
+            <div class="mb-2">
+                <label class="form-label small mb-1">Payment Method</label>
+                <select id="paymentMethod" class="form-select form-select-sm">
+                    <option value="0">Cash</option>
+                    <option value="1">Credit Card</option>
+                    <option value="2">Debit Card</option>
+                    <option value="3">Mobile Wallet</option>
+                </select>
+            </div>
+            <div class="mb-2">
+                <label class="form-label small mb-1">Amount Tendered</label>
+                <input type="number" id="amountPaid" value="0" min="0" step="0.01" class="form-control form-control-sm" oninput="calcChange()" />
+            </div>
+            <div class="d-flex justify-content-between small mb-3 text-info">
+                <span>Change:</span><span id="change" class="fw-bold">0.00</span>
+            </div>
+            <button class="btn btn-success w-100" onclick="finalizeSale()">
+                <i class="fas fa-check-circle me-1"></i>Finalize Sale
+            </button>
+        </div>
+    </div>
+</div>
+
+<div id="receiptModal" class="modal fade" tabindex="-1">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header py-2">
+                <h6 class="modal-title mb-0">Receipt</h6>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="receiptContent" style="font-family:monospace;font-size:0.85rem"></div>
+            <div class="modal-footer py-2 gap-2">
+                <button class="btn btn-sm btn-primary" onclick="window.print()"><i class="fas fa-print me-1"></i>Print</button>
+                <button class="btn btn-sm btn-secondary" data-bs-dismiss="modal" onclick="resetPOS()">New Sale</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+let cart = [];
+const searchInput = document.getElementById('itemSearch');
+let searchTimeout;
+
+searchInput.addEventListener('input', function() {
+    clearTimeout(searchTimeout);
+    const q = this.value.trim();
+    if (q.length < 2) { document.getElementById('searchResults').innerHTML = ''; return; }
+    searchTimeout = setTimeout(async () => {
+        const resp = await fetch('/api/app/items/search?filter=' + encodeURIComponent(q) + '&maxCount=8');
+        if (!resp.ok) return;
+        const items = await resp.json();
+        const box = document.getElementById('searchResults');
+        box.innerHTML = '';
+        if (items.length === 0) {
+            const empty = document.createElement('div');
+            empty.className = 'list-group-item text-muted small';
+            empty.textContent = 'No items found';
+            box.appendChild(empty);
+            return;
+        }
+        items.forEach(i => {
+            const a = document.createElement('a');
+            a.className = 'list-group-item list-group-item-action py-2';
+            a.href = '#';
+            a.dataset.itemId = i.id;
+            a.dataset.itemName = i.name;
+            a.dataset.itemPrice = i.salePrice;
+            const nameSpan = document.createElement('span');
+            nameSpan.className = 'fw-semibold';
+            nameSpan.textContent = i.name;
+            a.appendChild(nameSpan);
+            if (i.barcode) {
+                const code = document.createElement('code');
+                code.className = 'ms-2 small text-muted';
+                code.textContent = i.barcode;
+                a.appendChild(code);
+            }
+            const priceSpan = document.createElement('span');
+            priceSpan.className = 'float-end fw-bold text-success';
+            priceSpan.textContent = parseFloat(i.salePrice).toFixed(2);
+            a.appendChild(priceSpan);
+            a.addEventListener('click', e => {
+                e.preventDefault();
+                addToCart(a.dataset.itemId, a.dataset.itemName, parseFloat(a.dataset.itemPrice));
+            });
+            box.appendChild(a);
+        });
+    }, 200);
+});
+
+document.addEventListener('click', e => { if (!e.target.closest('#itemSearch') && !e.target.closest('#searchResults')) document.getElementById('searchResults').innerHTML = ''; });
+
+function addToCart(id, name, price) {
+    document.getElementById('searchResults').innerHTML = '';
+    searchInput.value = '';
+    const existing = cart.find(c => c.id === id);
+    if (existing) { existing.qty++; }
+    else { cart.push({ id, name, price: parseFloat(price), qty: 1 }); }
+    renderCart();
+    searchInput.focus();
+}
+
+function renderCart() {
+    const tbody = document.getElementById('cartBody');
+    tbody.innerHTML = '';
+    cart.forEach((item, idx) => {
+        const tr = document.createElement('tr');
+
+        const tdName = document.createElement('td');
+        tdName.className = 'small';
+        tdName.textContent = item.name;
+        tr.appendChild(tdName);
+
+        const tdQty = document.createElement('td');
+        tdQty.className = 'text-center';
+        const qtyInput = document.createElement('input');
+        qtyInput.type = 'number';
+        qtyInput.value = item.qty;
+        qtyInput.min = '0.001';
+        qtyInput.step = '1';
+        qtyInput.className = 'form-control form-control-sm text-center p-0';
+        qtyInput.style.width = '70px';
+        qtyInput.addEventListener('input', () => updateQty(idx, qtyInput.value));
+        tdQty.appendChild(qtyInput);
+        tr.appendChild(tdQty);
+
+        const tdPrice = document.createElement('td');
+        tdPrice.className = 'text-end small';
+        tdPrice.textContent = item.price.toFixed(2);
+        tr.appendChild(tdPrice);
+
+        const tdTotal = document.createElement('td');
+        tdTotal.className = 'text-end small fw-bold';
+        tdTotal.textContent = (item.qty * item.price).toFixed(2);
+        tr.appendChild(tdTotal);
+
+        const tdAction = document.createElement('td');
+        const removeBtn = document.createElement('button');
+        removeBtn.className = 'btn btn-sm p-0 text-danger';
+        removeBtn.innerHTML = '<i class="fas fa-times"></i>';
+        removeBtn.addEventListener('click', () => removeItem(idx));
+        tdAction.appendChild(removeBtn);
+        tr.appendChild(tdAction);
+
+        tbody.appendChild(tr);
+    });
+    document.getElementById('cartCount').textContent = cart.reduce((s,i) => s + i.qty, 0);
+    recalculate();
+}
+
+function updateQty(idx, val) { const v = parseFloat(val); cart[idx].qty = v > 0 ? v : 1; renderCart(); }
+function removeItem(idx) { cart.splice(idx, 1); renderCart(); }
+function clearCart() { cart = []; renderCart(); }
+
+function recalculate() {
+    const subtotal = cart.reduce((sum, item) => sum + item.qty * item.price, 0);
+    const discount = parseFloat(document.getElementById('discount').value) || 0;
+    const grand = Math.max(0, subtotal - discount);
+    document.getElementById('subtotal').textContent = subtotal.toFixed(2);
+    document.getElementById('grandTotal').textContent = grand.toFixed(2);
+    calcChange();
+}
+
+function calcChange() {
+    const grand = parseFloat(document.getElementById('grandTotal').textContent) || 0;
+    const paid = parseFloat(document.getElementById('amountPaid').value) || 0;
+    document.getElementById('change').textContent = Math.max(0, paid - grand).toFixed(2);
+}
+
+async function finalizeSale() {
+    if (cart.length === 0) { alert('Cart is empty!'); return; }
+    const warehouseId = document.getElementById('warehouseId').value;
+    if (!warehouseId) { alert('Select a warehouse!'); return; }
+
+    const btn = event.target;
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Processing...';
+
+    const customerId = document.getElementById('customerId').value || null;
+    const discount = parseFloat(document.getElementById('discount').value) || 0;
+    const paymentMethod = parseInt(document.getElementById('paymentMethod').value);
+    const grandTotal = parseFloat(document.getElementById('grandTotal').textContent) || 0;
+    const amountPaid = Math.min(parseFloat(document.getElementById('amountPaid').value) || grandTotal, grandTotal);
+
+    const saleData = {
+        invoiceDate: new Date().toISOString(),
+        customerId,
+        warehouseId,
+        discountAmount: discount,
+        lines: cart.map(item => ({ itemId: item.id, quantity: item.qty, unitPrice: item.price, discountAmount: 0 })),
+        payments: [{ paymentMethod, amount: amountPaid, notes: null }]
+    };
+
+    try {
+        const resp = await fetch('/api/app/sales', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(saleData)
+        });
+        if (!resp.ok) {
+            const err = await resp.json().catch(() => ({ message: 'Unknown error' }));
+            alert('Error: ' + (err.error?.message || JSON.stringify(err)));
+            return;
+        }
+        const sale = await resp.json();
+        showReceipt(sale);
+    } catch(e) {
+        alert('Network error: ' + e.message);
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-check-circle me-1"></i>Finalize Sale';
+    }
+}
+
+function showReceipt(sale) {
+    const lines = sale.lines.map(l => `<tr><td>${l.itemName}</td><td style="text-align:right">${l.quantity}</td><td style="text-align:right">${l.lineTotal.toFixed(2)}</td></tr>`).join('');
+    document.getElementById('receiptContent').innerHTML = `
+        <div style="text-align:center;margin-bottom:8px"><strong>OCTALINES STORE</strong><br/><small>${new Date().toLocaleString()}</small></div>
+        <hr style="margin:4px 0"/>
+        <div><small>Invoice: <strong>${sale.invoiceNumber}</strong></small></div>
+        <hr style="margin:4px 0"/>
+        <table style="width:100%;font-size:0.8rem"><thead><tr><th>Item</th><th>Qty</th><th style="text-align:right">Total</th></tr></thead><tbody>${lines}</tbody></table>
+        <hr style="margin:4px 0"/>
+        <div style="display:flex;justify-content:space-between"><span>Subtotal:</span><span>${sale.subTotal.toFixed(2)}</span></div>
+        <div style="display:flex;justify-content:space-between"><span>Discount:</span><span>${sale.discountAmount.toFixed(2)}</span></div>
+        <div style="display:flex;justify-content:space-between;font-weight:bold"><span>TOTAL:</span><span>${sale.grandTotal.toFixed(2)}</span></div>
+        <div style="display:flex;justify-content:space-between"><span>Paid:</span><span>${sale.paidAmount.toFixed(2)}</span></div>
+        <div style="display:flex;justify-content:space-between;color:${sale.dueAmount > 0 ? 'red' : 'green'}"><span>Change/Due:</span><span>${(sale.paidAmount - sale.grandTotal).toFixed(2)}</span></div>
+        <hr style="margin:4px 0"/>
+        <div style="text-align:center;font-size:0.75rem">Thank you for your purchase!</div>`;
+    new bootstrap.Modal(document.getElementById('receiptModal')).show();
+}
+
+function resetPOS() {
+    clearCart();
+    document.getElementById('discount').value = '0';
+    document.getElementById('amountPaid').value = '0';
+    document.getElementById('customerId').value = '';
+    recalculate();
+}
+</script>
+}

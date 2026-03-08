@@ -1,0 +1,26 @@
+@page
+@model Octalines.Web.Pages.AccountsModel
+@{
+    ViewData["Title"] = "Accounts";
+}
+<div class="d-flex justify-content-end mb-3">
+    <a href="/Accounts/Create" class="btn btn-sm btn-primary"><i class="fas fa-plus me-1"></i>Add Account</a>
+</div>
+<div class="row g-3 mb-4">
+    @foreach (var acc in Model.Accounts?.Items ?? Array.Empty<AccountDto>())
+    {
+        <div class="col-md-4">
+            <div class="card border-start border-4 @(acc.AccountType == AccountType.Cash ? "border-success" : acc.AccountType == AccountType.Bank ? "border-primary" : "border-info")">
+                <div class="card-body">
+                    <div class="text-muted small">@acc.AccountType</div>
+                    <div class="h6 fw-semibold">@acc.Name</div>
+                    <div class="h4 fw-bold @(acc.Balance < 0 ? "text-danger" : "text-success")">@acc.Balance.ToString("N2")</div>
+                    <div class="d-flex gap-2 mt-2">
+                        <a href="/Accounts/Deposit?accountId=@acc.Id" class="btn btn-sm btn-outline-success">Deposit</a>
+                        <a href="/Accounts/Transfer" class="btn btn-sm btn-outline-primary">Transfer</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>

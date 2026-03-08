@@ -1,0 +1,54 @@
+@page
+@model Octalines.Web.Pages.SettingsPageModel
+@{
+    ViewData["Title"] = "Settings";
+}
+<div class="row">
+    <div class="col-md-7">
+        <div class="card">
+            <div class="card-header fw-semibold">Store Settings</div>
+            <div class="card-body">
+                <form method="post">
+                    <div asp-validation-summary="All" class="alert alert-danger py-2 small"></div>
+                    <div class="row g-3">
+                        <div class="col-md-8">
+                            <label class="form-label">Store Name <span class="text-danger">*</span></label>
+                            <input asp-for="Input.StoreName" class="form-control" />
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Currency</label>
+                            <input asp-for="Input.Currency" class="form-control" placeholder="USD" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Phone</label>
+                            <input asp-for="Input.Phone" class="form-control" />
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Address</label>
+                            <textarea asp-for="Input.Address" class="form-control" rows="2"></textarea>
+                        </div>
+                        <div class="col-12">
+                            <div class="form-check">
+                                <input asp-for="Input.AllowNegativeStock" class="form-check-input" type="checkbox" />
+                                <label asp-for="Input.AllowNegativeStock" class="form-check-label">Allow Negative Stock</label>
+                            </div>
+                        </div>
+                        <div class="col-12"><hr class="my-1" /><h6 class="mt-2">API Settings</h6></div>
+                        <div class="col-md-6">
+                            <label class="form-label">SMS Provider</label>
+                            <input asp-for="Input.SmsProvider" class="form-control" placeholder="e.g. Twilio" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">SMS API Key</label>
+                            <input asp-for="Input.SmsApiKey" class="form-control" type="password" />
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <button type="submit" class="btn btn-primary"><i class="fas fa-save me-1"></i>Save Settings</button>
+                    </div>
+                    @if (Model.Saved) { <div class="alert alert-success mt-3 mb-0"><i class="fas fa-check me-1"></i>Settings saved successfully!</div> }
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

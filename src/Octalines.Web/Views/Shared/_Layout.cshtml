@@ -1,0 +1,119 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Octalines</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <style>
+        html, body { height: 100%; margin: 0; }
+        .app-wrapper { display: flex; min-height: 100vh; }
+        .sidebar { width: 240px; min-height: 100vh; background: #1a1a2e; color: #fff; flex-shrink: 0; overflow-y: auto; }
+        .sidebar .brand { padding: 16px 20px; font-size: 1.2rem; font-weight: 700; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; gap: 8px; }
+        .sidebar .nav-link { color: rgba(255,255,255,0.75); padding: 8px 20px; font-size: 0.875rem; display: flex; align-items: center; gap: 10px; transition: all 0.15s; }
+        .sidebar .nav-link:hover, .sidebar .nav-link.active { color: #fff; background: rgba(255,255,255,0.12); }
+        .sidebar .nav-section { font-size: 0.68rem; text-transform: uppercase; color: rgba(255,255,255,0.4); padding: 12px 20px 4px; letter-spacing: 1px; }
+        .main-area { flex: 1; display: flex; flex-direction: column; background: #f0f2f5; min-width: 0; }
+        .topbar { background: #fff; padding: 0 24px; height: 56px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #e9ecef; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+        .page-body { padding: 24px; flex: 1; }
+        .card { border: none; box-shadow: 0 1px 4px rgba(0,0,0,0.07); border-radius: 8px; }
+        .table th { font-size: 0.78rem; font-weight: 600; text-transform: uppercase; color: #6c757d; letter-spacing: 0.5px; }
+        .summary-card { border-left: 4px solid; border-radius: 8px; }
+    </style>
+</head>
+<body>
+<div class="app-wrapper">
+    <div class="sidebar">
+        <div class="brand"><i class="fas fa-store"></i> Octalines</div>
+        <nav class="pt-1">
+            <div class="nav-section">Main</div>
+            <a class="nav-link @(ViewContext.RouteData.Values["page"]?.ToString() == "/Dashboard" ? "active" : "")" href="/Dashboard">
+                <i class="fas fa-tachometer-alt fa-fw"></i> Dashboard
+            </a>
+            <div class="nav-section">Sales</div>
+            <a class="nav-link @(ViewContext.RouteData.Values["page"]?.ToString() == "/POS" ? "active" : "")" href="/POS">
+                <i class="fas fa-cash-register fa-fw"></i> POS
+            </a>
+            <a class="nav-link @(ViewContext.RouteData.Values["page"]?.ToString()?.StartsWith("/Sales") == true ? "active" : "")" href="/Sales">
+                <i class="fas fa-receipt fa-fw"></i> Sales
+            </a>
+            <a class="nav-link @(ViewContext.RouteData.Values["page"]?.ToString()?.StartsWith("/Quotations") == true ? "active" : "")" href="/Quotations">
+                <i class="fas fa-file-invoice fa-fw"></i> Quotations
+            </a>
+            <div class="nav-section">Purchases</div>
+            <a class="nav-link @(ViewContext.RouteData.Values["page"]?.ToString()?.StartsWith("/Purchases") == true ? "active" : "")" href="/Purchases">
+                <i class="fas fa-shopping-cart fa-fw"></i> Purchases
+            </a>
+            <div class="nav-section">Inventory</div>
+            <a class="nav-link @(ViewContext.RouteData.Values["page"]?.ToString()?.StartsWith("/Items") == true ? "active" : "")" href="/Items">
+                <i class="fas fa-boxes fa-fw"></i> Items
+            </a>
+            <a class="nav-link @(ViewContext.RouteData.Values["page"]?.ToString()?.StartsWith("/Stock") == true ? "active" : "")" href="/Stock/Adjustments">
+                <i class="fas fa-warehouse fa-fw"></i> Stock
+            </a>
+            <a class="nav-link @(ViewContext.RouteData.Values["page"]?.ToString()?.StartsWith("/Warehouses") == true ? "active" : "")" href="/Warehouses">
+                <i class="fas fa-building fa-fw"></i> Warehouses
+            </a>
+            <div class="nav-section">Contacts</div>
+            <a class="nav-link @(ViewContext.RouteData.Values["page"]?.ToString()?.StartsWith("/Customers") == true ? "active" : "")" href="/Customers">
+                <i class="fas fa-users fa-fw"></i> Customers
+            </a>
+            <a class="nav-link @(ViewContext.RouteData.Values["page"]?.ToString()?.StartsWith("/Suppliers") == true ? "active" : "")" href="/Suppliers">
+                <i class="fas fa-truck fa-fw"></i> Suppliers
+            </a>
+            <div class="nav-section">Finance</div>
+            <a class="nav-link @(ViewContext.RouteData.Values["page"]?.ToString()?.StartsWith("/Accounts") == true ? "active" : "")" href="/Accounts">
+                <i class="fas fa-wallet fa-fw"></i> Accounts
+            </a>
+            <a class="nav-link @(ViewContext.RouteData.Values["page"]?.ToString()?.StartsWith("/Expenses") == true ? "active" : "")" href="/Expenses">
+                <i class="fas fa-money-bill-wave fa-fw"></i> Expenses
+            </a>
+            <a class="nav-link @(ViewContext.RouteData.Values["page"]?.ToString()?.StartsWith("/Advances") == true ? "active" : "")" href="/Advances">
+                <i class="fas fa-hand-holding-usd fa-fw"></i> Advances
+            </a>
+            <a class="nav-link @(ViewContext.RouteData.Values["page"]?.ToString()?.StartsWith("/Coupons") == true ? "active" : "")" href="/Coupons">
+                <i class="fas fa-tags fa-fw"></i> Coupons
+            </a>
+            <div class="nav-section">Communication</div>
+            <a class="nav-link @(ViewContext.RouteData.Values["page"]?.ToString()?.StartsWith("/Messaging") == true ? "active" : "")" href="/Messaging">
+                <i class="fas fa-comment-alt fa-fw"></i> Messaging
+            </a>
+            <div class="nav-section">Admin</div>
+            <a class="nav-link @(ViewContext.RouteData.Values["page"]?.ToString()?.StartsWith("/Reports") == true ? "active" : "")" href="/Reports">
+                <i class="fas fa-chart-bar fa-fw"></i> Reports
+            </a>
+            <a class="nav-link @(ViewContext.RouteData.Values["page"]?.ToString()?.StartsWith("/Settings") == true ? "active" : "")" href="/Settings">
+                <i class="fas fa-cog fa-fw"></i> Settings
+            </a>
+            <a class="nav-link" href="/Identity/Users">
+                <i class="fas fa-user-shield fa-fw"></i> Users
+            </a>
+        </nav>
+    </div>
+    <div class="main-area">
+        <div class="topbar">
+            <h6 class="mb-0 fw-semibold">@(ViewData["Title"] ?? "Octalines")</h6>
+            <div class="d-flex gap-3 align-items-center">
+                <span class="text-muted small">@DateTime.Now.ToString("MMM dd, yyyy")</span>
+                @if (User.Identity?.IsAuthenticated == true)
+                {
+                    <span class="text-muted small"><i class="fas fa-user me-1"></i>@User.Identity.Name</span>
+                    <a href="/account/logout" class="btn btn-sm btn-outline-secondary">Logout</a>
+                }
+                else
+                {
+                    <a href="/account/login" class="btn btn-sm btn-primary">Login</a>
+                }
+            </div>
+        </div>
+        <div class="page-body">
+            @RenderBody()
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+@await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
