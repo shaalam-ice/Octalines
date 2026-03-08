@@ -1,12 +1,12 @@
 using Volo.Abp.Autofac;
 using Volo.Abp.Modularity;
 
-namespace Octalines;
+namespace Octalines.DbMigrator;
 
 [DependsOn(
     typeof(AbpAutofacModule),
-    typeof(OctalinesApplicationModule),
-    typeof(OctalinesEntityFrameworkCoreModule)
+    typeof(OctalinesEntityFrameworkCoreModule),
+    typeof(OctalinesApplicationModule)
 )]
 public class OctalinesDbMigratorModule : AbpModule
 {

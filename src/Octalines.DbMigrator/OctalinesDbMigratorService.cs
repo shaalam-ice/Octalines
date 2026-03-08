@@ -1,22 +1,21 @@
-using Microsoft.Extensions.Logging;
+using Volo.Abp.Data;
 using Volo.Abp.DependencyInjection;
 
-namespace Octalines;
+namespace Octalines.DbMigrator;
 
 public class OctalinesDbMigratorService : ITransientDependency
 {
-    private readonly ILogger<OctalinesDbMigratorService> _logger;
+    private readonly IDataSeeder _dataSeeder;
 
-    public OctalinesDbMigratorService(ILogger<OctalinesDbMigratorService> logger)
+    public OctalinesDbMigratorService(IDataSeeder dataSeeder)
     {
-        _logger = logger;
+        _dataSeeder = dataSeeder;
     }
 
-    public async Task RunAsync()
+    public async Task RunAsync(CancellationToken cancellationToken)
     {
-        _logger.LogInformation("Running database migrations...");
-        // TODO: Add actual EF Core migration logic, e.g.:
-        // await dbContext.Database.MigrateAsync();
-        await Task.CompletedTask;
+        Console.WriteLine("Starting database migration and seeding...");
+        await _dataSeeder.SeedAsync();
+        Console.WriteLine("Done! Database migration and seeding completed.");
     }
 }
