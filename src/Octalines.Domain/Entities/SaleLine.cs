@@ -4,6 +4,9 @@ namespace Octalines.Entities;
 
 public class SaleLine : Entity<Guid>
 {
+    public SaleLine(Guid id) : base(id) { }
+    protected SaleLine() { }
+
     public Guid SaleId { get; set; }
     public Guid ItemId { get; set; }
     public string ItemName { get; set; } = string.Empty;

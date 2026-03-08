@@ -4,6 +4,9 @@ namespace Octalines.Entities;
 
 public class StockLedger : CreationAuditedAggregateRoot<Guid>
 {
+    public StockLedger(Guid id) : base(id) { }
+    protected StockLedger() { }
+
     public Guid ItemId { get; set; }
     public Guid WarehouseId { get; set; }
     public StockMovementType MovementType { get; set; }

@@ -4,6 +4,9 @@ namespace Octalines.Entities;
 
 public class Contact : FullAuditedAggregateRoot<Guid>
 {
+    public Contact(Guid id) : base(id) { }
+    protected Contact() { }
+
     public ContactType ContactType { get; set; }
     public string Name { get; set; } = string.Empty;
     public string? Email { get; set; }

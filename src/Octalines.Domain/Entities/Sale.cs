@@ -4,6 +4,9 @@ namespace Octalines.Entities;
 
 public class Sale : FullAuditedAggregateRoot<Guid>
 {
+    public Sale(Guid id) : base(id) { }
+    protected Sale() { }
+
     public string InvoiceNumber { get; set; } = string.Empty;
     public DateTime InvoiceDate { get; set; } = DateTime.UtcNow;
     public Guid? CustomerId { get; set; }

@@ -4,6 +4,9 @@ namespace Octalines.Entities;
 
 public class MessageLog : CreationAuditedAggregateRoot<Guid>
 {
+    public MessageLog(Guid id) : base(id) { }
+    protected MessageLog() { }
+
     public string RecipientPhone { get; set; } = string.Empty;
     public string Content { get; set; } = string.Empty;
     public MessageChannel Channel { get; set; }

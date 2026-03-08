@@ -4,6 +4,9 @@ namespace Octalines.Entities;
 
 public class StockAdjustment : FullAuditedAggregateRoot<Guid>
 {
+    public StockAdjustment(Guid id) : base(id) { }
+    protected StockAdjustment() { }
+
     public Guid ItemId { get; set; }
     public Guid WarehouseId { get; set; }
     public AdjustmentType AdjustmentType { get; set; }

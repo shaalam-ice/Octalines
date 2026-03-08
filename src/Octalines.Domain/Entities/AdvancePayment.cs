@@ -4,6 +4,9 @@ namespace Octalines.Entities;
 
 public class AdvancePayment : FullAuditedAggregateRoot<Guid>
 {
+    public AdvancePayment(Guid id) : base(id) { }
+    protected AdvancePayment() { }
+
     public Guid ContactId { get; set; }
     public AdvanceType AdvanceType { get; set; }
     public decimal Amount { get; set; }

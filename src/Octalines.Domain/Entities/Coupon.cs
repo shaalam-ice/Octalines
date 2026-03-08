@@ -4,6 +4,9 @@ namespace Octalines.Entities;
 
 public class Coupon : FullAuditedAggregateRoot<Guid>
 {
+    public Coupon(Guid id) : base(id) { }
+    protected Coupon() { }
+
     public string Code { get; set; } = string.Empty;
     public decimal DiscountAmount { get; set; }
     public decimal? DiscountPercent { get; set; }

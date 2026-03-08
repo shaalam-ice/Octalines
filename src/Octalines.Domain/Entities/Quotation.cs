@@ -4,6 +4,9 @@ namespace Octalines.Entities;
 
 public class Quotation : FullAuditedAggregateRoot<Guid>
 {
+    public Quotation(Guid id) : base(id) { }
+    protected Quotation() { }
+
     public string QuotationNumber { get; set; } = string.Empty;
     public DateTime QuotationDate { get; set; } = DateTime.UtcNow;
     public Guid? CustomerId { get; set; }

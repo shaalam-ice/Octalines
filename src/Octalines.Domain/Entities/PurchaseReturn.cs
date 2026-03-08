@@ -4,6 +4,9 @@ namespace Octalines.Entities;
 
 public class PurchaseReturn : FullAuditedAggregateRoot<Guid>
 {
+    public PurchaseReturn(Guid id) : base(id) { }
+    protected PurchaseReturn() { }
+
     public Guid PurchaseId { get; set; }
     public string ReturnNumber { get; set; } = string.Empty;
     public DateTime ReturnDate { get; set; } = DateTime.UtcNow;

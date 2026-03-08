@@ -4,6 +4,9 @@ namespace Octalines.Entities;
 
 public class QuotationLine : Entity<Guid>
 {
+    public QuotationLine(Guid id) : base(id) { }
+    protected QuotationLine() { }
+
     public Guid QuotationId { get; set; }
     public Guid ItemId { get; set; }
     public string ItemName { get; set; } = string.Empty;

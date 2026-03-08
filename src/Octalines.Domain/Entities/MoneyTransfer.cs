@@ -4,6 +4,9 @@ namespace Octalines.Entities;
 
 public class MoneyTransfer : FullAuditedAggregateRoot<Guid>
 {
+    public MoneyTransfer(Guid id) : base(id) { }
+    protected MoneyTransfer() { }
+
     public Guid FromAccountId { get; set; }
     public Guid ToAccountId { get; set; }
     public decimal Amount { get; set; }

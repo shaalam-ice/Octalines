@@ -4,6 +4,9 @@ namespace Octalines.Entities;
 
 public class StockTransfer : FullAuditedAggregateRoot<Guid>
 {
+    public StockTransfer(Guid id) : base(id) { }
+    protected StockTransfer() { }
+
     public Guid ItemId { get; set; }
     public Guid FromWarehouseId { get; set; }
     public Guid ToWarehouseId { get; set; }

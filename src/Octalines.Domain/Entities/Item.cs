@@ -4,6 +4,9 @@ namespace Octalines.Entities;
 
 public class Item : FullAuditedAggregateRoot<Guid>
 {
+    public Item(Guid id) : base(id) { }
+    protected Item() { }
+
     public string Name { get; set; } = string.Empty;
     public string? Barcode { get; set; }
     public string? Sku { get; set; }

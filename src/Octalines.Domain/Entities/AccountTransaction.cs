@@ -4,6 +4,9 @@ namespace Octalines.Entities;
 
 public class AccountTransaction : CreationAuditedAggregateRoot<Guid>
 {
+    public AccountTransaction(Guid id) : base(id) { }
+    protected AccountTransaction() { }
+
     public Guid AccountId { get; set; }
     public TransactionType TransactionType { get; set; }
     public decimal Amount { get; set; }

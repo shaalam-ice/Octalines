@@ -4,6 +4,9 @@ namespace Octalines.Entities;
 
 public class StoreSettings : FullAuditedAggregateRoot<Guid>
 {
+    public StoreSettings(Guid id) : base(id) { }
+    protected StoreSettings() { }
+
     public string StoreName { get; set; } = "My Store";
     public string? Address { get; set; }
     public string? Phone { get; set; }

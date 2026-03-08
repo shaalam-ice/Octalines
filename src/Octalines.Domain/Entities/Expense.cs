@@ -4,6 +4,9 @@ namespace Octalines.Entities;
 
 public class Expense : FullAuditedAggregateRoot<Guid>
 {
+    public Expense(Guid id) : base(id) { }
+    protected Expense() { }
+
     public Guid ExpenseCategoryId { get; set; }
     public Guid? AccountId { get; set; }
     public decimal Amount { get; set; }
