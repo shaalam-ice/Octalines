@@ -1,0 +1,27 @@
+@page
+@model Octalines.Web.Pages.QuotationsModel
+@{
+    ViewData["Title"] = "Quotations";
+}
+<div class="d-flex justify-content-end mb-3">
+    <a href="/Quotations/Create" class="btn btn-sm btn-primary"><i class="fas fa-plus me-1"></i>New Quotation</a>
+</div>
+<div class="card">
+    <div class="card-body p-0">
+        <table class="table table-hover mb-0">
+            <thead class="table-light"><tr><th>QT#</th><th>Date</th><th>Customer</th><th class="text-end">Total</th><th>Status</th></tr></thead>
+            <tbody>
+                @foreach (var q in Model.Quotations?.Items ?? Array.Empty<QuotationDto>())
+                {
+                    <tr>
+                        <td class="fw-semibold">@q.QuotationNumber</td>
+                        <td>@q.QuotationDate.ToString("dd MMM yy")</td>
+                        <td>@(q.CustomerName ?? "—")</td>
+                        <td class="text-end">@q.GrandTotal.ToString("N2")</td>
+                        <td><span class="badge @(q.IsConvertedToSale ? "bg-success" : "bg-warning text-dark")">@(q.IsConvertedToSale ? "Converted" : "Pending")</span></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

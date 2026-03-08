@@ -1,0 +1,34 @@
+@page
+@model Octalines.Web.Pages.SuppliersModel
+@{
+    ViewData["Title"] = "Suppliers";
+}
+<div class="d-flex justify-content-between mb-3">
+    <form method="get" class="d-flex gap-2">
+        <input name="filter" type="text" class="form-control form-control-sm" placeholder="Search..." value="@Model.Filter" style="width:220px" />
+        <button type="submit" class="btn btn-sm btn-outline-primary">Search</button>
+    </form>
+    <a href="/Suppliers/Create" class="btn btn-sm btn-primary"><i class="fas fa-plus me-1"></i>Add Supplier</a>
+</div>
+<div class="card">
+    <div class="card-body p-0">
+        <table class="table table-hover mb-0">
+            <thead class="table-light">
+                <tr><th>Name</th><th>Phone</th><th>Email</th><th>Balance</th><th>Status</th><th style="width:100px"></th></tr>
+            </thead>
+            <tbody>
+                @foreach (var s in Model.Suppliers?.Items ?? Array.Empty<ContactDto>())
+                {
+                    <tr>
+                        <td class="fw-semibold">@s.Name</td>
+                        <td>@s.Phone</td>
+                        <td>@s.Email</td>
+                        <td>@s.Balance.ToString("N2")</td>
+                        <td><span class="badge @(s.IsActive ? "bg-success" : "bg-secondary")">@(s.IsActive ? "Active" : "Inactive")</span></td>
+                        <td><a href="/Suppliers/Edit/@s.Id" class="btn btn-sm btn-outline-secondary py-0 px-2">Edit</a></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

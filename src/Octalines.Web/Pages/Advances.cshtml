@@ -1,0 +1,28 @@
+@page
+@model Octalines.Web.Pages.AdvancesModel
+@{
+    ViewData["Title"] = "Advance Payments";
+}
+<div class="d-flex justify-content-end mb-3">
+    <a href="/Advances/Create" class="btn btn-sm btn-primary"><i class="fas fa-plus me-1"></i>Add Advance</a>
+</div>
+<div class="card">
+    <div class="card-body p-0">
+        <table class="table table-hover mb-0">
+            <thead class="table-light"><tr><th>Date</th><th>Contact</th><th>Type</th><th class="text-end">Amount</th><th class="text-end">Used</th><th class="text-end">Remaining</th></tr></thead>
+            <tbody>
+                @foreach (var a in Model.Advances?.Items ?? Array.Empty<AdvancePaymentDto>())
+                {
+                    <tr>
+                        <td>@a.AdvanceDate.ToString("dd MMM yy")</td>
+                        <td>@a.ContactName</td>
+                        <td>@a.AdvanceType</td>
+                        <td class="text-end">@a.Amount.ToString("N2")</td>
+                        <td class="text-end">@a.UsedAmount.ToString("N2")</td>
+                        <td class="text-end">@a.RemainingAmount.ToString("N2")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

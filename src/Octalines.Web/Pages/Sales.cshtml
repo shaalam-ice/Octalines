@@ -1,0 +1,43 @@
+@page
+@model Octalines.Web.Pages.SalesModel
+@{
+    ViewData["Title"] = "Sales";
+}
+<div class="d-flex justify-content-between mb-3">
+    <form method="get" class="d-flex gap-2">
+        <input name="filter" type="text" class="form-control form-control-sm" placeholder="Invoice #..." value="@Model.Filter" style="width:180px" />
+        <button type="submit" class="btn btn-sm btn-outline-primary">Search</button>
+    </form>
+    <div class="d-flex gap-2">
+        <a href="/POS" class="btn btn-sm btn-success"><i class="fas fa-cash-register me-1"></i>POS</a>
+        <a href="/Sales/Create" class="btn btn-sm btn-primary"><i class="fas fa-plus me-1"></i>Add Sale</a>
+    </div>
+</div>
+<div class="card">
+    <div class="card-body p-0">
+        <table class="table table-hover mb-0">
+            <thead class="table-light">
+                <tr><th>Invoice#</th><th>Date</th><th>Customer</th><th>Total</th><th>Paid</th><th>Due</th><th>Status</th><th></th></tr>
+            </thead>
+            <tbody>
+                @foreach (var s in Model.Sales?.Items ?? Array.Empty<SaleDto>())
+                {
+                    <tr>
+                        <td class="fw-semibold"><a href="/Sales/Detail/@s.Id" class="text-decoration-none">@s.InvoiceNumber</a></td>
+                        <td>@s.InvoiceDate.ToString("dd MMM yy")</td>
+                        <td>@(s.CustomerName ?? "Walk-in")</td>
+                        <td>@s.GrandTotal.ToString("N2")</td>
+                        <td>@s.PaidAmount.ToString("N2")</td>
+                        <td class="@(s.DueAmount > 0 ? "text-danger fw-bold" : "text-success")">@s.DueAmount.ToString("N2")</td>
+                        <td><span class="badge @(s.Status == SaleStatus.Completed ? "bg-success" : s.Status == SaleStatus.Returned ? "bg-danger" : "bg-warning text-dark")">@s.Status</span></td>
+                        <td><a href="/Sales/Detail/@s.Id" class="btn btn-sm btn-outline-primary py-0 px-2">View</a></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+@if ((Model.Sales?.TotalCount ?? 0) > 0)
+{
+    <div class="mt-2 text-muted small">@Model.Sales?.TotalCount records</div>
+}

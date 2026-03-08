@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Volo.Abp;
+using Volo.Abp.AspNetCore.Mvc;
 using Volo.Abp.AspNetCore.Mvc.UI.Theme.Basic;
 using Volo.Abp.Identity.Web;
 using Volo.Abp.Modularity;
@@ -19,6 +20,14 @@ namespace Octalines.Web;
 )]
 public class OctalinesWebModule : AbpModule
 {
+    public override void PreConfigureServices(ServiceConfigurationContext context)
+    {
+        PreConfigure<AbpAspNetCoreMvcOptions>(options =>
+        {
+            options.ConventionalControllers.Create(typeof(OctalinesApplicationModule).Assembly);
+        });
+    }
+
     public override void ConfigureServices(ServiceConfigurationContext context)
     {
         var services = context.Services;
@@ -40,9 +49,7 @@ public class OctalinesWebModule : AbpModule
         var env = context.GetEnvironment();
 
         if (env.IsDevelopment())
-        {
             app.UseDeveloperExceptionPage();
-        }
 
         app.UseStaticFiles();
         app.UseRouting();
