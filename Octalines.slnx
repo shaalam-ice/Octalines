@@ -1,0 +1,12 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Octalines.Application.Contracts/Octalines.Application.Contracts.csproj" />
+    <Project Path="src/Octalines.Application/Octalines.Application.csproj" />
+    <Project Path="src/Octalines.DbMigrator/Octalines.DbMigrator.csproj" />
+    <Project Path="src/Octalines.Domain.Shared/Octalines.Domain.Shared.csproj" />
+    <Project Path="src/Octalines.Domain/Octalines.Domain.csproj" />
+    <Project Path="src/Octalines.EntityFrameworkCore/Octalines.EntityFrameworkCore.csproj" />
+    <Project Path="src/Octalines.HttpApi/Octalines.HttpApi.csproj" />
+    <Project Path="src/Octalines.Web/Octalines.Web.csproj" />
+  </Folder>
+</Solution>
